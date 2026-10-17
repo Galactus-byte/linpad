@@ -21,7 +21,11 @@ if get_option('kernel') == 'ish'
     endif
 endif
 
-libarchive = dependency('libarchive', required: false)
+libarchive = dependency(
+    'libarchive',
+    method: 'pkg-config',
+    required: false
+)
 if not libarchive.found()
     # homebrew
     libarchive_lib = cc.find_library('archive', dirs: ['/usr/local/opt/libarchive/lib'], required: false)
