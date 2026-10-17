@@ -81,7 +81,22 @@ jobs:
             -showBuildSettings 2>/dev/null |
             grep -E '^[[:space:]]*(PRODUCT_BUNDLE_IDENTIFIER|ROOT_BUNDLE_IDENTIFIER|ROOTFS_URL|CODE_SIGN_ENTITLEMENTS) =' |
             sort -u
+      - name: Inspect profile entitlements
+        run: |
+          echo "=== Team identifier ==="
+          /usr/libexec/PlistBuddy \
+            -c 'Print :Entitlements:com.apple.developer.team-identifier' \
+            "$RUNNER_TEMP/profile-check/profile.plist" || true
 
+          echo "=== App groups ==="
+          /usr/libexec/PlistBuddy \
+            -c 'Print :Entitlements:com.apple.security.application-groups' \
+            "$RUNNER_TEMP/profile-check/profile.plist" || true
+
+          echo "=== Profile type ==="
+          /usr/libexec/PlistBuddy \
+            -c 'Print :ProvisionedDevices' \
+            "$RUNNER_TEMP/profile-check/profile.plist" || true
       - name: Check root filesystem build workflow
         run: |
           echo "Workflow files:"
