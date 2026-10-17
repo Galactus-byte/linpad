@@ -1,0 +1,88 @@
+
+name: Build Debian LinPad IPA
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build and sign LinPad ARM64
+    runs-on: macos-15
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout LinPad
+        uses: actions/checkout@v5
+        with:
+          submodules: recursive
+
+      - name: Install build tools
+        run: |
+          brew install meson ninja llvm lld libarchive sqlite
+
+      - name: Import signing certificate
+        env:
+          P12_BASE64: ${{ secrets.LINPAD_P12_BASE64 }}
+          P12_PASSWORD: ${{ secrets.LINPAD_P12_PASSWORD }}
+        run: |
+          set -euo pipefail
+          KEYCHAIN="$RUNNER_TEMP/linpad.keychain-db"
+          CERT="$RUNNER_TEMP/certificate.p12"
+
+          echo "$P12_BASE64" | base64 -D > "$CERT"
+          security create-keychain -p "" "$KEYCHAIN"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN"
+          security unlock-keychain -p "" "$KEYCHAIN"
+          security import "$CERT" \
+            -k "$KEYCHAIN" \
+            -P "$P12_PASSWORD" \
+            -f pkcs12
+          security set-key-partition-list \
+            -S apple-tool:,apple: \
+            -s -k "" "$KEYCHAIN"
+          security list-keychains -d user -s "$KEYCHAIN"
+          security find-identity -v -p codesigning "$KEYCHAIN"
+          rm -f "$CERT"
+
+      - name: Install provisioning profile
+        env:
+          PROFILE_BASE64: ${{ secrets.LINPAD_PROVISION_PROFILE_BASE64 }}
+        run: |
+          set -euo pipefail
+          PROFILE="$RUNNER_TEMP/profile.mobileprovision"
+          echo "$PROFILE_BASE64" | base64 -D > "$PROFILE"
+          security cms -D -i "$PROFILE" \
+            > "$RUNNER_TEMP/profile.plist"
+
+          mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
+          UUID=$(/usr/libexec/PlistBuddy \
+            -c 'Print :UUID' "$RUNNER_TEMP/profile.plist")
+          cp "$PROFILE" \
+            "$HOME/Library/MobileDevice/Provisioning Profiles/$UUID.mobileprovision"
+
+      - name: Build ARM64 app
+        run: |
+          set -euo pipefail
+          export PATH="/opt/homebrew/opt/llvm/bin:/opt/homebrew/opt/lld/bin:$PATH"
+
+          xcodebuild \
+            -project iSH.xcodeproj \
+            -target iSH-ARM64 \
+            -configuration Release \
+            -sdk iphoneos \
+            -allowProvisioningUpdates \
+            SYMROOT="$PWD/build-ios-release" \
+            IPHONEOS_DEPLOYMENT_TARGET=17.0 \
+            ISH_JIT_BUILD=enabled \
+            build
+
+      - name: Upload app for next build stage
+        uses: actions/upload-artifact@v4
+        with:
+          name: linpad-arm64-app
+          path: build-ios-release/Release-iphoneos/*.app
+          if-no-files-found: error
+          retention-days: 7
