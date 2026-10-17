@@ -24,6 +24,17 @@ jobs:
         run: |
           xcodebuild -list -project iSH.xcodeproj
 
+      - name: Inspect root filesystem configuration
+        run: |
+          echo "=== ROOTFS_URL references ==="
+          grep -n -C 4 'ROOTFS_URL' iSH.xcodeproj/project.pbxproj || true
+
+          echo "=== Download Root build phases ==="
+          grep -n -C 8 'Download Root' iSH.xcodeproj/project.pbxproj || true
+
+          echo "=== Bundle identifiers ==="
+          grep -n -C 2 'PRODUCT_BUNDLE_IDENTIFIER' iSH.xcodeproj/project.pbxproj || true
+
       - name: Check signing workflow secrets exist
         env:
           P12: ${{ secrets.LINPAD_P12_BASE64 }}
