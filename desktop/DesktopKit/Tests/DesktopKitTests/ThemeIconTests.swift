@@ -179,3 +179,4 @@ func testLargeFolderReadsEachIconFileOnce() {
         "one read per distinct icon file, none while scrolling"
     )
 }
+}
