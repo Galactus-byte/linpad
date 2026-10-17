@@ -89,9 +89,8 @@ jobs:
           echo
           echo "Importing certificate into keychain..."
           security import "$CERTIFICATE" \
-            -P "$P12_PASSWORD" \
-            -k "$KEYCHAIN" \
-            -T /usr/bin/codesign
+               -P "$P12_PASSWORD" \
+               -k "$KEYCHAIN"
 
           echo
           echo "Checking code-signing identities..."
