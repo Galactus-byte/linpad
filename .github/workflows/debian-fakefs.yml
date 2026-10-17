@@ -33,7 +33,6 @@ jobs:
 
       - name: Build fakefsify
         run: |
-          pkg-config --modversion libarchive
           ninja -C build-port fakefsify
 
       - name: Create Debian ARM64 archive
