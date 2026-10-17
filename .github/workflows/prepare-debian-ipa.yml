@@ -97,6 +97,16 @@ jobs:
           /usr/libexec/PlistBuddy \
             -c 'Print :ProvisionedDevices' \
             "$RUNNER_TEMP/profile-check/profile.plist" || true
+          - name: Check ARM64 target identifiers
+            run: |
+          xcodebuild \
+            -project iSH.xcodeproj \
+            -target iSH-ARM64 \
+            -configuration Release \
+            -sdk iphoneos \
+            -showBuildSettings 2>/dev/null |
+            grep -E '^[[:space:]]*(PRODUCT_BUNDLE_IDENTIFIER|PRODUCT_NAME|ROOT_BUNDLE_IDENTIFIER|DEVELOPMENT_TEAM) =' |
+            sort -u
       - name: Check root filesystem build workflow
         run: |
           echo "Workflow files:"
