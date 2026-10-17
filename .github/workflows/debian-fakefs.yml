@@ -31,7 +31,9 @@ jobs:
             -Dkernel=ish
 
       - name: Build fakefsify
-        run: ninja -C build-port
+        run: |
+          pkg-config --modversion libarchive
+          ninja -C build-port fakefsify
 
       - name: Create Debian ARM64 archive
         run: |
