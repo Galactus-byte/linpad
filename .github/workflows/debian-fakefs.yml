@@ -20,7 +20,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            meson ninja-build gcc g++ \
+            meson ninja-build gcc g++ pkgconf \
             libarchive-dev libsqlite3-dev \
             debootstrap debian-archive-keyring
 
@@ -31,7 +31,7 @@ jobs:
             -Dkernel=ish
 
       - name: Build fakefsify
-        run: ninja -C build-port fakefsify
+        run: ninja -C build-port
 
       - name: Create Debian ARM64 archive
         run: |
