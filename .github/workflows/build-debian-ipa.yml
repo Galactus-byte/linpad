@@ -80,6 +80,14 @@ jobs:
 
           echo "Provisioning profile installed."
 
+      - name: Allow Swift package macros
+        run: |
+          defaults write com.apple.dt.Xcode \
+            IDESkipPackagePluginFingerprintValidatation \
+            -bool YES
+
+          echo "Xcode package macro validation setting applied."
+
       - name: Build ARM64 app
         run: |
           set -o pipefail
