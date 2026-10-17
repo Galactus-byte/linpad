@@ -63,9 +63,9 @@ jobs:
           cp "$PROFILE" \
             "$HOME/Library/MobileDevice/Provisioning Profiles/$UUID.mobileprovision"
 
-      - name: Build ARM64 app
-        run: |
-          set -euo pipefail
+            - name: Build ARM64 app
+              run: |
+          set -o pipefail
           export PATH="/opt/homebrew/opt/llvm/bin:/opt/homebrew/opt/lld/bin:$PATH"
 
           xcodebuild \
@@ -73,11 +73,9 @@ jobs:
             -target iSH-ARM64 \
             -configuration Release \
             -sdk iphoneos \
-            -allowProvisioningUpdates \
             SYMROOT="$PWD/build-ios-release" \
             IPHONEOS_DEPLOYMENT_TARGET=17.0 \
-            ISH_JIT_BUILD=enabled \
-            build
+            build 2>&1 | tee "$RUNNER_TEMP/xcode-build.log"
 
       - name: Upload app for next build stage
         uses: actions/upload-artifact@v4
