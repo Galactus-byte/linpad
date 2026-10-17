@@ -1,0 +1,56 @@
+
+name: Build Debian ARM64 Root Filesystem
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/debian-rootfs.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build-debian-rootfs:
+    name: Build Debian 13 ARM64
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 30
+
+    steps:
+      - name: Install rootfs tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y debootstrap debian-archive-keyring
+
+      - name: Build Debian root filesystem
+        run: |
+          set -euxo pipefail
+          ROOTFS="$RUNNER_TEMP/debian-arm64"
+
+          sudo debootstrap \
+            --arch=arm64 \
+            --variant=minbase \
+            trixie \
+            "$ROOTFS" \
+            https://deb.debian.org/debian
+
+          ARCH=$(sudo chroot "$ROOTFS" /usr/bin/dpkg --print-architecture)
+          VERSION=$(sudo chroot "$ROOTFS" /bin/cat /etc/debian_version)
+
+          echo "Architecture: $ARCH"
+          echo "Debian version: $VERSION"
+
+          test "$ARCH" = "arm64"
+
+          sudo tar \
+            --numeric-owner \
+            -czf "$RUNNER_TEMP/debian-arm64-rootfs.tar.gz" \
+            -C "$ROOTFS" .
+
+      - name: Upload Debian rootfs
+        uses: actions/upload-artifact@v4
+        with:
+          name: debian-13-arm64-rootfs
+          path: ${{ runner.temp }}/debian-arm64-rootfs.tar.gz
+          if-no-files-found: error
+          retention-days: 7
