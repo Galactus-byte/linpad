@@ -95,6 +95,8 @@ jobs:
             SYMROOT="$PWD/build-ios-release" \
             IPHONEOS_DEPLOYMENT_TARGET=17.0 \
             DEVELOPMENT_TEAM=FSZVB8ZXU6 \
+            PRODUCT_BUNDLE_IDENTIFIER=com.Azor421757.Azor \
+            CODE_SIGN_STYLE=Manual \
             build 2>&1 | tee "$RUNNER_TEMP/xcode-build.log"
 
 
