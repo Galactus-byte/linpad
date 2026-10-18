@@ -80,6 +80,13 @@ jobs:
 
           echo "Provisioning profile installed."
           
+      - name: Allow Swift package macros
+        run: |
+          defaults write com.apple.dt.Xcode \
+            IDESkipPackagePluginFingerprintValidatation \
+            -bool YES
+
+          echo "Xcode package macro validation setting applied."
 
       - name: Build ARM64 app
         run: |
@@ -99,15 +106,6 @@ jobs:
             PROVISIONING_PROFILE_SPECIFIER="Azor_00008120-001168EE3A020032_1781726226" \
             PROVISIONING_PROFILE=fc2c7fbb-2cb0-4a77-8cc0-df9d1a43fe84 \
             build 2>&1 | tee "$RUNNER_TEMP/xcode-build.log"
-
-
-      - name: Allow Swift package macros
-        run: |
-          defaults write com.apple.dt.Xcode \
-            IDESkipPackagePluginFingerprintValidatation \
-            -bool YES
-
-          echo "Xcode package macro validation setting applied."
 
 
       - name: Upload build output for troubleshooting
