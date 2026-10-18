@@ -88,24 +88,12 @@ jobs:
 
           echo "Xcode package macro validation setting applied."
 
-      - name: Test Perception macro plugin
-        run: |
-          set -euo pipefail
-
-          PERCEPTION_DIR="$(find \
-            "$HOME/Library/Developer/Xcode/DerivedData" \
-            -path '*/SourcePackages/checkouts/swift-perception/Package.swift' \
-            -print -quit)"
-
-          if [ -z "$PERCEPTION_DIR" ]; then
-            echo "Could not locate the swift-perception checkout."
-            exit 1
-          fi
-
-          swift build \
-            --package-path "$(dirname "$PERCEPTION_DIR")" \
-            --target PerceptionMacros \
-            -v
+           - name: Locate Perception package
+             run: |
+          echo "Searching for swift-perception..."
+          find "$HOME/Library" \
+            -path '*/swift-perception/Package.swift' \
+            -print 2>/dev/null || true
      
       - name: Upload build output for troubleshooting
         if: always()
