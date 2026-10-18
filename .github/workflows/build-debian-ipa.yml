@@ -97,6 +97,8 @@ jobs:
             DEVELOPMENT_TEAM=FSZVB8ZXU6 \
             PRODUCT_BUNDLE_IDENTIFIER=com.Azor421757.Azor \
             CODE_SIGN_STYLE=Manual \
+            PROVISIONING_PROFILE_SPECIFIER="Azor_00008120-001168EE3A020032_1781726226" \
+            PROVISIONING_PROFILE=fc2c7fbb-2cb0-4a77-8cc0-df9d1a43fe84 \
             build 2>&1 | tee "$RUNNER_TEMP/xcode-build.log"
 
 
