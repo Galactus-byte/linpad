@@ -93,7 +93,7 @@ jobs:
             -configuration Release \
             -sdk iphoneos \
             SYMROOT="$PWD/build-ios-release" \
-            IPHONEOS_DEPLOYMENT_TARGET=17.0 \
+            IPHONEOS_DEPLOYMENT_TARGET=16.0 \
             DEVELOPMENT_TEAM=FSZVB8ZXU6 \
             PRODUCT_BUNDLE_IDENTIFIER=com.Azor421757.Azor \
             CODE_SIGN_STYLE=Manual \
