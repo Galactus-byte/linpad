@@ -8,7 +8,7 @@ PRODUCT_NAME = iSH ARM64
 // update installs over the existing app and keeps its Linux system.
 APP_DISPLAY_NAME = Linux for iPad
 PRODUCT_BUNDLE_IDENTIFIER = $(ROOT_BUNDLE_IDENTIFIER).arm64
-PRODUCT_APP_GROUP_IDENTIFIER = group.$(ROOT_BUNDLE_IDENTIFIER).arm64
+PRODUCT_APP_GROUP_IDENTIFIER = group.sunny1
 
 // Link meson-built libraries directly from the arm64 meson build dir.
 // These are NOT in the Frameworks build phase to prevent Xcode from
