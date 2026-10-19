@@ -106,8 +106,8 @@ jobs:
 
       - name: Locate Perception package
         run: |
-          echo "Searching for swift-perception..."
-          find "$HOME/Library" \
+          echo "Searching Swift package cache..."
+          find "$RUNNER_TEMP/SourcePackages" "$HOME/Library/Developer/Xcode/DerivedData" \
             -path '*/swift-perception/Package.swift' \
             -print 2>/dev/null || true
 
