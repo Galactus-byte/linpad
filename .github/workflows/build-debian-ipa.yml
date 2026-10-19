@@ -19,6 +19,14 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Cache Homebrew downloads
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Caches/Homebrew
+          key: macos-15-homebrew-v1
+          restore-keys: |
+            macos-15-homebrew-
+
       - name: Install build tools
         run: |
           brew install meson ninja llvm lld libarchive sqlite
@@ -80,21 +88,45 @@ jobs:
 
           echo "Provisioning profile installed."
           
+
+      - name: Cache Swift packages
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/SourcePackages
+          key: macos-15-spm-${{ hashFiles('**/Package.resolved') }}
+          restore-keys: |
+            macos-15-spm-
+
       - name: Allow Swift package macros
         run: |
           defaults write com.apple.dt.Xcode \
-            IDESkipPackagePluginFingerprintValidatation \
+            IDESkipPackagePluginFingerprintValidation \
             -bool YES
-
           echo "Xcode package macro validation setting applied."
 
-           - name: Locate Perception package
-             run: |
-          echo "Searching for swift-perception..."
-          find "$HOME/Library" \
-            -path '*/swift-perception/Package.swift' \
-            -print 2>/dev/null || true
-     
+      - name: Build ARM64 app
+        run: |
+          set -o pipefail
+          export PATH="/opt/homebrew/opt/llvm/bin:/opt/homebrew/opt/lld/bin:$PATH"
+
+          xcodebuild \
+            -skipMacroValidation \
+            -project iSH.xcodeproj \
+            -target iSH-ARM64 \
+            -configuration Release \
+            -sdk iphoneos \
+            -clonedSourcePackagesDirPath "$RUNNER_TEMP/SourcePackages" \
+            SYMROOT="$PWD/build-ios-release" \
+            DEVELOPMENT_TEAM=FSZVB8ZXU6 \
+            PRODUCT_BUNDLE_IDENTIFIER=com.Azor421757.Azor \
+            CODE_SIGN_STYLE=Manual \
+            PROVISIONING_PROFILE_SPECIFIER="Azor_00008120-001168EE3A020032_1781726226" \
+            PROVISIONING_PROFILE=fc2c7fbb-2cb0-4a77-8cc0-df9d1a43fe84 \
+            build 2>&1 | tee "$RUNNER_TEMP/xcode-build.log"
+
+
+
+
       - name: Upload build output for troubleshooting
         if: always()
         uses: actions/upload-artifact@v4
