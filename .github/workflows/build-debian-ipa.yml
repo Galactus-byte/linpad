@@ -104,6 +104,13 @@ jobs:
             -bool YES
           echo "Xcode package macro validation setting applied."
 
+      - name: Locate Perception package
+        run: |
+          echo "Searching for swift-perception..."
+          find "$HOME/Library" \
+            -path '*/swift-perception/Package.swift' \
+            -print 2>/dev/null || true
+
       - name: Build ARM64 app
         run: |
           set -o pipefail
