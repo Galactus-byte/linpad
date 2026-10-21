@@ -120,6 +120,16 @@ jobs:
           echo "=== Active developer directory ==="
           xcode-select -p
 
+      - name: Diagnose Swift package resolution
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -resolvePackageDependencies \
+            -project iSH.xcodeproj \
+            -target iSH-ARM64 \
+            -clonedSourcePackagesDirPath "$RUNNER_TEMP/SourcePackages" \
+            2>&1 | tee "$RUNNER_TEMP/package-resolution.log"
+
       - name: Build ARM64 app
         run: |
           set -o pipefail
