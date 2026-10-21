@@ -130,6 +130,18 @@ jobs:
             -clonedSourcePackagesDirPath "$RUNNER_TEMP/SourcePackages" \
             2>&1 | tee "$RUNNER_TEMP/package-resolution.log"
 
+      - name: Diagnose Perception macro build settings
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project iSH.xcodeproj \
+            -target iSH-ARM64 \
+            -configuration Release \
+            -sdk iphoneos \
+            -clonedSourcePackagesDirPath "$RUNNER_TEMP/SourcePackages" \
+            -showBuildSettings 2>&1 |
+            grep -E 'SWIFT_VERSION|SDKROOT|BUILT_PRODUCTS_DIR|BUILD_DIR|SYMROOT|OBJROOT|TOOLCHAINS' || true
+
       - name: Build ARM64 app
         run: |
           set -o pipefail
