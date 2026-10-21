@@ -165,6 +165,29 @@ jobs:
 
 
 
+      - name: Diagnose Perception macro executable
+        if: always()
+        run: |
+          echo "=== Looking for PerceptionMacros executable ==="
+          find "$PWD/build-ios-release" "$PWD/build" "$RUNNER_TEMP/SourcePackages" \
+            -type f -name 'PerceptionMacros' -print 2>/dev/null || true
+
+          for f in \
+            "$PWD/build-ios-release/Release-iphoneos/PerceptionMacros" \
+            "$PWD/build/Release-iphoneos/PerceptionMacros"; do
+            if [ -e "$f" ]; then
+              echo "=== Found: $f ==="
+              ls -l "$f"
+              file "$f" || true
+              echo "=== Launch test (first 20 lines) ==="
+              "$f" 2>&1 | head -n 20 || true
+            fi
+          done
+
+          echo "=== Related macro build products ==="
+          find "$PWD/build-ios-release" "$PWD/build" \
+            -iname '*Perception*' -print 2>/dev/null | head -n 80 || true
+
       - name: Upload build output for troubleshooting
         if: always()
         uses: actions/upload-artifact@v4
