@@ -111,6 +111,15 @@ jobs:
             -path '*/swift-perception/Package.swift' \
             -print 2>/dev/null || true
 
+      - name: Check Xcode and Swift versions
+        run: |
+          echo "=== Xcode ==="
+          xcodebuild -version
+          echo "=== Swift ==="
+          swift --version
+          echo "=== Active developer directory ==="
+          xcode-select -p
+
       - name: Build ARM64 app
         run: |
           set -o pipefail
