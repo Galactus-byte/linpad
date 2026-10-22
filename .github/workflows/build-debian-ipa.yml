@@ -142,6 +142,17 @@ jobs:
             -showBuildSettings 2>&1 |
             grep -E 'SWIFT_VERSION|SDKROOT|BUILT_PRODUCTS_DIR|BUILD_DIR|SYMROOT|OBJROOT|TOOLCHAINS' || true
 
+      - name: Check Swift macro build environment
+        run: |
+          echo "=== Host architecture ==="
+          uname -m
+          echo "=== Swift compiler ==="
+          xcrun swiftc --version
+          echo "=== Xcode version ==="
+          xcodebuild -version
+          echo "=== Resolved Perception dependency ==="
+          grep -n -A 8 -B 3 'swift-perception' desktop/DesktopKit/Package.resolved || true
+
       - name: Build ARM64 app
         run: |
           set -o pipefail
