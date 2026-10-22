@@ -222,7 +222,7 @@ jobs:
           file "$PWD/build-ios-release/Release-iphoneos/PerceptionMacros" || true
           lipo -info "$PWD/build-ios-release/Release-iphoneos/PerceptionMacros" 2>&1 || true
           echo "=== Macro plugin errors in build log ==="
-          grep -n -i -E 'PerceptionMacros|malformed response|external macro implementation|plugin.*(fail|error)' "$RUNNER_TEMP/xcode-build.log" | head -n 100 || true
+          grep -n -i -E 'malformed response|external macro implementation|error:|plugin.*(fail|error)' "$RUNNER_TEMP/xcode-build.log" | tail -n 15 || true
 
       - name: Upload build output for troubleshooting
         if: always()
