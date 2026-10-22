@@ -188,6 +188,19 @@ jobs:
           find "$PWD/build-ios-release" "$PWD/build" \
             -iname '*Perception*' -print 2>/dev/null | head -n 80 || true
 
+      - name: Inspect Swift macro plugin failure
+        if: always()
+        run: |
+          echo "=== Host architecture ==="
+          uname -m
+          echo "=== Swift compiler ==="
+          xcrun swiftc --version
+          echo "=== Macro executable architecture ==="
+          file "$PWD/build-ios-release/Release-iphoneos/PerceptionMacros" || true
+          lipo -info "$PWD/build-ios-release/Release-iphoneos/PerceptionMacros" 2>&1 || true
+          echo "=== Macro plugin errors in build log ==="
+          grep -n -i -E 'PerceptionMacros|malformed response|external macro implementation|plugin.*(fail|error)' "$RUNNER_TEMP/xcode-build.log" | head -n 100 || true
+
       - name: Upload build output for troubleshooting
         if: always()
         uses: actions/upload-artifact@v4
