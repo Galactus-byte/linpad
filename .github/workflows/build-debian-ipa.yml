@@ -153,6 +153,18 @@ jobs:
           echo "=== Resolved Perception dependency ==="
           grep -n -A 8 -B 3 'swift-perception' desktop/DesktopKit/Package.resolved || true
 
+      - name: Inspect Perception macro target settings
+        run: |
+          echo "=== Perception macro target settings ==="
+          xcodebuild \
+            -project iSH.xcodeproj \
+            -target iSH-ARM64 \
+            -configuration Release \
+            -sdk iphoneos \
+            -showBuildSettings 2>&1 |
+            grep -E 'SWIFT_EXEC|SWIFT_VERSION|SDKROOT|PLATFORM_NAME|EFFECTIVE_PLATFORM_NAME|TARGET_BUILD_DIR|CONFIGURATION_BUILD_DIR|PerceptionMacros' |
+            head -n 60 || true
+
       - name: Build ARM64 app
         run: |
           set -o pipefail
