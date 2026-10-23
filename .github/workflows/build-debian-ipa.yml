@@ -29,7 +29,7 @@ jobs:
 
       - name: Install build tools
         run: |
-          brew install meson ninja llvm lld libarchive sqlite
+          brew install meson ninja llvm lld libarchive sqlite pkg-config
 
       - name: Import signing certificate
         env:
@@ -164,7 +164,21 @@ jobs:
             -showBuildSettings 2>&1 |
             grep -E 'SWIFT_EXEC|SWIFT_VERSION|SDKROOT|PLATFORM_NAME|EFFECTIVE_PLATFORM_NAME|TARGET_BUILD_DIR|CONFIGURATION_BUILD_DIR|PerceptionMacros' |
             head -n 60 || true
+            
+      - name: Cache GPU third-party libraries
+        uses: actions/cache@v4
+        with:
+          path: |
+            gpu/prefix-ios
+            gpu/third_party
+            gpu/downloads
+          key: gpu-third-party-ios-v1
 
+      - name: Build GPU third-party libraries
+        run: |
+          python3 -m pip install --user mako
+          ./gpu/build-third-party.sh ios
+          
       - name: Build ARM64 app
         run: |
           set -o pipefail
