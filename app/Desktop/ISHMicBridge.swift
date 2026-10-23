@@ -77,7 +77,7 @@ final class ISHMicBridge: @unchecked Sendable {
     static func configureSession(_ session: AVAudioSession, recording: Bool) throws {
         if recording {
             try session.setCategory(.playAndRecord, mode: .default,
-                                    options: [.defaultToSpeaker, .allowBluetoothHFP, .allowBluetoothA2DP])
+                                    options: [.defaultToSpeaker, .allowBluetooth, .allowBluetoothA2DP])
         } else {
             try session.setCategory(.playback, mode: .default, options: [])
         }
