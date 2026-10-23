@@ -173,9 +173,9 @@ jobs:
           xcodebuild \
             -skipMacroValidation \
             -project iSH.xcodeproj \
-            -target iSH-ARM64 \
+            -scheme iSH-ARM64 \
             -configuration Release \
-            -sdk iphoneos \
+             -destination 'generic/platform=iOS' \
             -clonedSourcePackagesDirPath "$RUNNER_TEMP/SourcePackages" \
             SYMROOT="$PWD/build-ios-release" \
             DEVELOPMENT_TEAM=FSZVB8ZXU6 \
