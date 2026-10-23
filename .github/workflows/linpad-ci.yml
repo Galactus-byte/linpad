@@ -22,7 +22,7 @@ jobs:
   # Repository checks: cheap, so they run on Linux.
   checks:
     name: Repository checks
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: macos-26
     timeout-minutes: 10
     steps:
       - uses: useblacksmith/checkout@v1
