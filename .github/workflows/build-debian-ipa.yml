@@ -29,7 +29,7 @@ jobs:
 
       - name: Install build tools
         run: |
-          brew install meson ninja llvm lld libarchive sqlite pkg-config xyz
+          brew install meson ninja llvm lld libarchive sqlite pkg-config
 
       - name: Import signing certificate
         env:
@@ -176,7 +176,7 @@ jobs:
 
       - name: Build GPU third-party libraries
         run: |
-          python3 -m pip install --user mako
+          python3 -m pip install --user --break-system-packages mako
           ./gpu/build-third-party.sh ios
           
       - name: Build ARM64 app
