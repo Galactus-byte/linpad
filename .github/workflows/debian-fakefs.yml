@@ -9,12 +9,12 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-24.04-arm
+    runs-on: blacksmith-4vcpu-ubuntu-2404-arm
     timeout-minutes: 45
 
     steps:
       - name: Checkout LinPad
-        uses: actions/checkout@v4
+        uses: useblacksmith/checkout@v1
 
       - name: Install build dependencies
         run: |

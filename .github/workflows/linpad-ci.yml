@@ -22,10 +22,10 @@ jobs:
   # Repository checks: cheap, so they run on Linux.
   checks:
     name: Repository checks
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v5
+      - uses: useblacksmith/checkout@v1
         with:
           fetch-depth: 0
 
@@ -108,7 +108,7 @@ jobs:
 
   desktopkit:
     name: DesktopKit unit tests (iPad Simulator)
-    runs-on: macos-26
+    runs-on: blacksmith-6vcpu-macos-26
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v5
@@ -154,7 +154,7 @@ jobs:
 
   emulator:
     name: Emulator build and ARM64 CPU tests
-    runs-on: macos-26
+    runs-on: blacksmith-6vcpu-macos-26
     timeout-minutes: 30
     env:
       ALPINE_VERSION: "3.21.0"
