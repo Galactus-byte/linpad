@@ -111,37 +111,6 @@ jobs:
             -path '*/swift-perception/Package.swift' \
             -print 2>/dev/null || true
 
-      - name: Check Xcode and Swift versions
-        run: |
-          echo "=== Xcode ==="
-          xcodebuild -version
-          echo "=== Swift ==="
-          swift --version
-          echo "=== Active developer directory ==="
-          xcode-select -p
-
-      - name: Diagnose Swift package resolution
-        run: |
-          set -o pipefail
-          xcodebuild \
-            -resolvePackageDependencies \
-            -project iSH.xcodeproj \
-            -target iSH-ARM64 \
-            -clonedSourcePackagesDirPath "$RUNNER_TEMP/SourcePackages" \
-            2>&1 | tee "$RUNNER_TEMP/package-resolution.log"
-
-      - name: Diagnose Perception macro build settings
-        run: |
-          set -o pipefail
-          xcodebuild \
-            -project iSH.xcodeproj \
-            -target iSH-ARM64 \
-            -configuration Release \
-            -sdk iphoneos \
-            -clonedSourcePackagesDirPath "$RUNNER_TEMP/SourcePackages" \
-            -showBuildSettings 2>&1 |
-            grep -E 'SWIFT_VERSION|SDKROOT|BUILT_PRODUCTS_DIR|BUILD_DIR|SYMROOT|OBJROOT|TOOLCHAINS' || true
-
       - name: Check Swift macro build environment
         run: |
           echo "=== Host architecture ==="
@@ -152,19 +121,7 @@ jobs:
           xcodebuild -version
           echo "=== Resolved Perception dependency ==="
           grep -n -A 8 -B 3 'swift-perception' desktop/DesktopKit/Package.resolved || true
-
-      - name: Inspect Perception macro target settings
-        run: |
-          echo "=== Perception macro target settings ==="
-          xcodebuild \
-            -project iSH.xcodeproj \
-            -target iSH-ARM64 \
-            -configuration Release \
-            -sdk iphoneos \
-            -showBuildSettings 2>&1 |
-            grep -E 'SWIFT_EXEC|SWIFT_VERSION|SDKROOT|PLATFORM_NAME|EFFECTIVE_PLATFORM_NAME|TARGET_BUILD_DIR|CONFIGURATION_BUILD_DIR|PerceptionMacros' |
-            head -n 60 || true
-            
+          
       - name: Cache GPU third-party libraries
         uses: actions/cache@v4
         with:
@@ -224,19 +181,6 @@ jobs:
           echo "=== Related macro build products ==="
           find "$PWD/build-ios-release" "$PWD/build" \
             -iname '*Perception*' -print 2>/dev/null | head -n 80 || true
-
-      - name: Inspect Swift macro plugin failure
-        if: always()
-        run: |
-          echo "=== Host architecture ==="
-          uname -m
-          echo "=== Swift compiler ==="
-          xcrun swiftc --version
-          echo "=== Macro executable architecture ==="
-          file "$PWD/build-ios-release/Release-iphoneos/PerceptionMacros" || true
-          lipo -info "$PWD/build-ios-release/Release-iphoneos/PerceptionMacros" 2>&1 || true
-          echo "=== Macro plugin errors in build log ==="
-          grep -n -i -E 'malformed response|external macro implementation|error:|plugin.*(fail|error)' "$RUNNER_TEMP/xcode-build.log" | tail -n 15 || true
 
       - name: Upload build output for troubleshooting
         if: always()
