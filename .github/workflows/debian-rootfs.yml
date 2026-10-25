@@ -1,4 +1,3 @@
-
 name: Build Debian ARM64 Root Filesystem
 
 on:
@@ -8,12 +7,12 @@ on:
       - ".github/workflows/debian-rootfs.yml"
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build-debian-rootfs:
     name: Build Debian 13 ARM64
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-latest
     timeout-minutes: 30
 
     steps:
@@ -55,9 +54,15 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
-       - name: Publish rootfs to GitHub Release
-  env:
-    GH_TOKEN: ${{ github.token }}
-  run: |
-    gh release create debian-13-arm64 --title "Debian 13 ARM64 rootfs" "$RUNNER_TEMP/debian-arm64-rootfs.tar.gz" || \
-    gh release upload debian-13-arm64 "$RUNNER_TEMP/debian-arm64-rootfs.tar.gz" --clobber
+      - name: Publish rootfs to GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view debian-13-arm64 >/dev/null 2>&1; then
+            gh release upload debian-13-arm64 "$RUNNER_TEMP/debian-arm64-rootfs.tar.gz" --clobber
+          else
+            gh release create debian-13-arm64 \
+              --title "Debian 13 ARM64 rootfs" \
+              --notes "Debian trixie minbase rootfs for LinPad" \
+              "$RUNNER_TEMP/debian-arm64-rootfs.tar.gz"
+          fi
