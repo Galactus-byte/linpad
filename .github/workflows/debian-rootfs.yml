@@ -19,7 +19,7 @@ jobs:
       - name: Install rootfs tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y debootstrap debian-archive-keyring
+          sudo apt-get install -y debootstrap debian-archive-keyring qemu-user-static
 
       - name: Build Debian root filesystem
         run: |
