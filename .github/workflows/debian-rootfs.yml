@@ -54,3 +54,10 @@ jobs:
           path: ${{ runner.temp }}/debian-arm64-rootfs.tar.gz
           if-no-files-found: error
           retention-days: 7
+
+       - name: Publish rootfs to GitHub Release
+  env:
+    GH_TOKEN: ${{ github.token }}
+  run: |
+    gh release create debian-13-arm64 --title "Debian 13 ARM64 rootfs" "$RUNNER_TEMP/debian-arm64-rootfs.tar.gz" || \
+    gh release upload debian-13-arm64 "$RUNNER_TEMP/debian-arm64-rootfs.tar.gz" --clobber
